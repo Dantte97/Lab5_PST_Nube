@@ -69,9 +69,15 @@ def verificar_token(
     return credentials.credentials
 @app.get("/")
 def servir_dashboard():
-    ruta_html = os.path.join(os.path.dirname(__file__), "index.html")
-    if os.path.exists(ruta_html):
-        return FileResponse(ruta_html)
+    # Intenta buscar index.html en la ruta actual o en la carpeta raíz del proceso
+    if os.path.exists("index.html"):
+        return FileResponse("index.html")
+    # Si por alguna razón no lo encuentra, buscamos de forma absoluta
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    path_html = os.path.join(base_dir, "index.html")
+    if os.path.exists(path_html):
+        return FileResponse(path_html)
+    
     return {"status": "online", "mensaje": "API Telemetria Lab 5 activa en la nube."}
 @app.post("/api/lecturas", status_code=201)
 def guardar_lectura(lectura: LecturaIn, token: str = Depends(verificar_token)):
